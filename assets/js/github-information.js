@@ -33,14 +33,14 @@ function repoInformationHTML (repos) {
                         <strong>Repo List:</strong>
                     </p>
                     <ul>
-                        ${listItemsHTML.join("/n")}
+                        ${listItemsHTML.join("\n")}
                     </ul>
                 </div>`;
 }
 
 function fetchGitHubInformation(event) {
-    $("gh-user-data").html("");
-    $("gh-repo-data").html("");
+    $("#gh-user-data").html("");
+    $("#gh-repo-data").html("");
     
     var username = $("#gh-username").val();
     if (!username) {
@@ -67,6 +67,9 @@ function fetchGitHubInformation(event) {
             function (errorResponse) {
                 if (errorResponse.status === 404) {
                     $("#gh-user-data").html(`<h2>No info found for user ${username}</h2>`);
+                } else if (errorResponse.status === 403) {
+                    var resetTime = new Date(errorResponse.getResponseHeader('X-RateLimit-Reset')*1000);
+                    $("#gh-user-data").html(`<h4>Too many requests, please wait until ${resetTime.toLocaleTimeString()}</h4>`);
                 } else {
                     console.log(errorResponse);
                     $("#gh-user-data").html(
